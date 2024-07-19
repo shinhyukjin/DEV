@@ -70,8 +70,8 @@ class GupnetLoss(nn.Module):
     def forward(self, preds, targets, teacher_pred, task_uncertainties=None):
 
         kd_loss = self.compute_kd_loss(preds, teacher_pred)
-        seg_loss = self.compute_segmentation_loss(preds, targets)
-        #seg_loss = self.compute_kd_difficulty_loss(preds, targets, teacher_pred)
+        #seg_loss = self.compute_segmentation_loss(preds, targets)
+        seg_loss = self.compute_kd_difficulty_loss(preds, targets, teacher_pred)
         bbox2d_loss = self.compute_bbox2d_loss(preds, targets)
         bbox3d_loss = self.compute_bbox3d_loss(preds, targets)
         #kd_loss = self.compute_kd_loss(preds, teacher_pred)
@@ -90,6 +90,39 @@ class GupnetLoss(nn.Module):
 
 
 
+    # def compute_kd_difficulty_loss(self, input, target, teacher_input):
+    #     input['heatmap'] = torch.clamp(input['heatmap'].sigmoid_(), min=1e-4, max=1 - 1e-4)
+    #     teacher_input['heatmap'] = torch.clamp(teacher_input['heatmap'].sigmoid_(), min=1e-4, max=1 - 1e-4)
+    #
+    #     pos_inds = target['heatmap'].eq(1).float()
+    #     neg_inds = target['heatmap'].lt(1).float()
+    #
+    #     loss = 0
+    #
+    #     # pos_loss = (1 - input['heatmap']) * pos_inds
+    #     pos_loss = torch.log(input['heatmap']) * torch.pow(1 - input['heatmap'], 2) * pos_inds
+    #     T_pos_loss = torch.log(teacher_input['heatmap']) * torch.pow(1 - teacher_input['heatmap'], 2) * pos_inds
+    #
+    #     neg_loss = torch.log(1 - input['heatmap']) * torch.pow(input['heatmap'], 2) * neg_inds
+    #     T_neg_loss = torch.log(1 - teacher_input['heatmap']) * torch.pow(teacher_input['heatmap'], 2) * neg_inds
+    #     #T_neg_loss = 0
+    #
+    #     num_pos = pos_inds.float().sum()
+    #
+    #     a = 0.8
+    #
+    #     pos_difi_loss = ((a * pos_loss) + ((1-a)*T_pos_loss)).pow(1).sum()
+    #     neg_difi_loss = ((a * neg_loss) + ((1-a)*T_neg_loss)).pow(1).sum()
+    #
+    #     if num_pos == 0:
+    #         loss = loss - neg_difi_loss
+    #     else:
+    #         loss = loss - (pos_difi_loss + neg_difi_loss) / num_pos
+    #
+    #     self.stat['kd_difi_loss'] = loss * 0.2
+    #     return loss
+
+
     def compute_kd_difficulty_loss(self, input, target, teacher_input):
         input['heatmap'] = torch.clamp(input['heatmap'].sigmoid_(), min=1e-4, max=1 - 1e-4)
         teacher_input['heatmap'] = torch.clamp(teacher_input['heatmap'].sigmoid_(), min=1e-4, max=1 - 1e-4)
@@ -103,20 +136,21 @@ class GupnetLoss(nn.Module):
 
         loss = 0
 
-        # pos_loss = (1 - input['heatmap']) * pos_inds
-        pos_loss = torch.log(input['heatmap']) * torch.pow(1 - input['heatmap'], 2) * pos_inds
-        T_pos_loss = torch.log(teacher_input['heatmap']) * torch.pow(1 - teacher_input['heatmap'], 2) * pos_inds
+        a = 0.8
 
-        neg_loss = torch.log(1 - input['heatmap']) * torch.pow(input['heatmap'], 2) * neg_inds
-        T_neg_loss = torch.log(1 - teacher_input['heatmap']) * torch.pow(teacher_input['heatmap'], 2) * neg_inds
+        # pos_loss = (1 - input['heatmap']) * pos_inds
+        pos_loss = torch.log(a*input['heatmap']+ (1-a)*teacher_input['heatmap']) * torch.pow((a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])), 2) * pos_inds
+
+        neg_loss = torch.log(a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])) * torch.pow(a*input['heatmap']+(1-a)*teacher_input['heatmap'], 2) * neg_inds
+
         #T_neg_loss = 0
 
         num_pos = pos_inds.float().sum()
 
-        a = 0.8
 
-        pos_difi_loss = ((a * pos_loss) + ((1-a)*T_pos_loss)).pow(1).sum()
-        neg_difi_loss = ((a * neg_loss) + ((1-a)*T_neg_loss)).pow(1).sum()
+
+        pos_difi_loss = pos_loss.sum()
+        neg_difi_loss = neg_loss.sum()
 
         if num_pos == 0:
             loss = loss - neg_difi_loss
