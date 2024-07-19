@@ -13,8 +13,8 @@ class Hierarchical_Task_Learning:
         self.term2index = {term:self.index2term.index(term) for term in self.index2term}  #term2index
         self.stat_epoch_nums = stat_epoch_nums
         self.past_losses=[]
-        self.loss_graph = {'seg_loss':[],
-                           #'kd_difi_loss': [],
+        self.loss_graph = {#'seg_loss':[],
+                           'kd_difi_loss': [],
                            'size2d_loss':[], 
                            'offset2d_loss':[],
                            'offset3d_loss':['size2d_loss','offset2d_loss'], 
@@ -94,8 +94,12 @@ class GupnetLoss(nn.Module):
         input['heatmap'] = torch.clamp(input['heatmap'].sigmoid_(), min=1e-4, max=1 - 1e-4)
         teacher_input['heatmap'] = torch.clamp(teacher_input['heatmap'].sigmoid_(), min=1e-4, max=1 - 1e-4)
 
+        #test1 = ((target['heatmap'][1][1]).sum())
+
         pos_inds = target['heatmap'].eq(1).float()
         neg_inds = target['heatmap'].lt(1).float()
+
+        #test2 = ((pos_inds[1][0]).sum())
 
         loss = 0
 
