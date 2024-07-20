@@ -198,7 +198,7 @@ class GUPNet(nn.Module):
                 #get roi feature
                 roi_feature_masked = roi_align(feat,box2d_masked,[7,7])
 
-                roi_feature_masked_13x13 = roi_align(feat, box2d_masked, [13, 13])
+                #roi_feature_masked_13x13 = roi_align(feat, box2d_masked, [13, 13])
 
                 #get coord range of each roi
                 coord_ranges_mask2d = coord_ranges[box2d_masked[:,0].long()]
@@ -297,7 +297,8 @@ class GUPNet(nn.Module):
             res['offset_3d'] = self.offset_3d(roi_feature_masked)[:,:,0,0]
             res['size_3d']= size3d_offset
             res['h3d_log_variance'] = h3d_log_std
-            res['roi_feature_masked'] = roi_feature_masked_13x13
+            #res['roi_feature_masked'] = roi_feature_masked_13x13
+            res['roi_feature_masked'] = roi_feature_masked
         else:
             res['depth'] = torch.zeros([1,2]).to(device_id)
             res['offset_3d'] = torch.zeros([1,2]).to(device_id)

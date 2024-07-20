@@ -21,7 +21,7 @@ class Hierarchical_Task_Learning:
                            'size3d_loss':['size2d_loss','offset2d_loss'], 
                            'heading_loss':['size2d_loss','offset2d_loss'], 
                            'depth_loss':['size2d_loss','size3d_loss','offset2d_loss'],
-                           'kd_feat_loss':[],
+                           'mid_feat_loss':[],
                            'kd_hinton_loss':[],
                            'roi_feature_loss':[]
                            }
@@ -136,7 +136,8 @@ class GupnetLoss(nn.Module):
 
         loss = 0
 
-        a = 0.8
+        #a = 0.8
+        a = 1
 
         # pos_loss = (1 - input['heatmap']) * pos_inds
         pos_loss = torch.log(a*input['heatmap']+ (1-a)*teacher_input['heatmap']) * torch.pow((a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])), 2) * pos_inds
@@ -157,7 +158,7 @@ class GupnetLoss(nn.Module):
         else:
             loss = loss - (pos_difi_loss + neg_difi_loss) / num_pos
 
-        self.stat['kd_difi_loss'] = loss * 0.2
+        self.stat['kd_difi_loss'] = loss * 4
         return loss
 
 
@@ -238,7 +239,7 @@ class GupnetLoss(nn.Module):
 
         loss = feature_kd_loss + hinton_kd_loss + roi_feature_loss
 
-        self.stat['kd_feat_loss'] = feature_kd_loss
+        self.stat['mid_feat_loss'] = feature_kd_loss
         self.stat['kd_hinton_loss'] = hinton_kd_loss
         self.stat['roi_feature_loss'] = roi_feature_loss
 

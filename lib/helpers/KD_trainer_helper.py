@@ -49,10 +49,10 @@ class KD_Trainer(object):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.class_name = test_loader.dataset.class_name
         self.tester_metrics = 'kitti' if 'tester_metrics' not in self.cfg_test.keys() else self.cfg_test['tester_metrics']
-        self.debug = 1
+        self.debug = 0
 
-        assert os.path.exists(self.cfg_student['resume_model'])
-        load_teacher_head_checkpoint(self.model, self.optimizer, self.cfg_student['resume_model'], self.logger, map_location=self.device)
+        # assert os.path.exists(self.cfg_student['resume_model'])
+        # load_teacher_head_checkpoint(self.model, self.optimizer, self.cfg_student['resume_model'], self.logger, map_location=self.device)
 
 
         assert os.path.exists(self.cfg_teacher['resume_model'])
