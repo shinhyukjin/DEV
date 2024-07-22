@@ -13,7 +13,7 @@ class Hierarchical_Task_Learning:
         self.term2index = {term:self.index2term.index(term) for term in self.index2term}  #term2index
         self.stat_epoch_nums = stat_epoch_nums
         self.past_losses=[]
-        self.loss_graph = {'seg_loss':[],
+        self.loss_graph = {#'seg_loss':[],
                            'kd_difi_loss': [],
                            'size2d_loss':[], 
                            'offset2d_loss':[],
@@ -70,17 +70,17 @@ class GupnetLoss(nn.Module):
     def forward(self, preds, targets, teacher_pred, task_uncertainties=None):
 
         kd_loss = self.compute_kd_loss(preds, teacher_pred)
-        kd_difi_loss = self.compute_kd_difficulty_loss_only(preds, targets, teacher_pred)
-        seg_loss = self.compute_segmentation_loss(preds, targets)
-        #kd_difi_loss = self.compute_kd_difficulty_loss(preds, targets, teacher_pred)
+        #kd_difi_loss = self.compute_kd_difficulty_loss_only(preds, targets, teacher_pred)
+        #seg_loss = self.compute_segmentation_loss(preds, targets)
+        kd_difi_loss = self.compute_kd_difficulty_loss(preds, targets, teacher_pred)
         bbox2d_loss = self.compute_bbox2d_loss(preds, targets)
         bbox3d_loss = self.compute_bbox3d_loss(preds, targets)
         #kd_loss = self.compute_kd_loss(preds, teacher_pred)
         
 
         #loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss
-        #loss = bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
-        loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
+        loss = bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
+        #loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
         
         return loss, self.stat
 
@@ -130,29 +130,20 @@ class GupnetLoss(nn.Module):
         input['heatmap'] = torch.clamp(input['heatmap'].sigmoid_(), min=1e-4, max=1 - 1e-4)
         teacher_input['heatmap'] = torch.clamp(teacher_input['heatmap'].sigmoid_(), min=1e-4, max=1 - 1e-4)
 
-        #test1 = ((target['heatmap'][1][1]).sum())
-
         pos_inds = target['heatmap'].eq(1).float()
         neg_inds = target['heatmap'].lt(1).float()
 
         neg_weights = torch.pow(1 - target['heatmap'], 4)
 
-
         loss = 0
-
         a = 0.8
-        #a = 1
 
         # pos_loss = (1 - input['heatmap']) * pos_inds
         pos_loss = torch.log(a*input['heatmap']+ (1-a)*teacher_input['heatmap']) * torch.pow((a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])), 2) * pos_inds
-
         neg_loss = torch.log(a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])) * torch.pow(a*input['heatmap']+(1-a)*teacher_input['heatmap'], 2) * neg_inds * neg_weights
-
-        #T_neg_loss = 0
+        #neg_loss = torch.log(1 - input['heatmap']) * torch.pow(input['heatmap'], 2) * neg_inds * neg_weights
 
         num_pos = pos_inds.float().sum()
-
-
 
         pos_difi_loss = pos_loss.sum()
         neg_difi_loss = neg_loss.sum()
@@ -162,7 +153,7 @@ class GupnetLoss(nn.Module):
         else:
             loss = loss - (pos_difi_loss + neg_difi_loss) / num_pos
 
-        loss = loss * 4
+        loss = loss * 3
 
         self.stat['kd_difi_loss'] = loss
         return loss
@@ -174,18 +165,14 @@ class GupnetLoss(nn.Module):
         t_logits = F.softmax(teacher_input['heatmap'].clone(), dim=1)
 
         pos_inds = target['heatmap'].eq(1).float()
+        num_pos = pos_inds.float().sum()
 
         a = 0.8
-
-        num_pos = pos_inds.float().sum()
 
         if num_pos == 0:
             loss = 0
         else:
             loss = ((a * ((1 - s_logits) * pos_inds) + (1 - a) * ((1 - t_logits) * pos_inds)).pow(1.5).sum()) / num_pos
-
-
-
 
         self.stat['kd_difi_loss'] = loss
         return loss
