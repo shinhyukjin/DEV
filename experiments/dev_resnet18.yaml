@@ -63,8 +63,10 @@ trainer:
   disp_frequency: 50 # display interval (in batch)
   #disp_frequency: 10 # display interval (in batch)
 
-  log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_st-inside_onlypositive_30__b1_200719'
-  #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_cls_stdifi0703_10__a1_200722'
+  #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_st-inside_onlypositive_notlog_10__a1_200723'
+  #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_cls_stdifi0703_pow2_10__b1_200723'
+  #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_cls_stdifi0703_pow2_05__a1_200725'
+  log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_cls_stdifi0802_pow2_05__b1_200725'
   #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_s-t-inside_difi_negweight_40__a1_200720'
 
   #log_dir: 'output/debuging'

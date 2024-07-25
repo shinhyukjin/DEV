@@ -17,18 +17,24 @@ dataset:
   scale: 0.4
   shift: 0.1
 
+#model:
+#  type: 'gupnet'
+#  backbone: 'resnet18'
+#  neck: 'DLAUp'
+#  use_conv: 'sesn'
+#  replace_style: 'max_scale_after_dla34_layer'
+#  sesn_norm_per_scale: False
+#  sesn_rescale_basis: False
+#  sesn_scales: [ 0.83, 0.9, 1.0 ]
+#  scale_index_for_init: 0
+#  downsample: 2
+#  #resume_model: 'output/checkpoint_epoch_140_dla34.pth'
+
 model:
   type: 'gupnet'
   backbone: 'resnet18'
   neck: 'DLAUp'
-  use_conv: 'sesn'
-  replace_style: 'max_scale_after_dla34_layer'
-  sesn_norm_per_scale: False
-  sesn_rescale_basis: False
-  sesn_scales: [ 0.83, 0.9, 1.0 ]
-  scale_index_for_init: 0
   downsample: 2
-  #resume_model: 'output/checkpoint_epoch_140_dla34.pth'
 
 
 teacher_model:

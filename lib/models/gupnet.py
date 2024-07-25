@@ -43,12 +43,13 @@ def weights_init_classifier(m):
             nn.init.constant_(m.bias, 0.0)
 
 class GUPNet(nn.Module):
-    def __init__(self, backbone='dla34', neck='DLAUp', downsample=4, mean_size=None, cfg= None):
+    def __init__(self, backbone='dla34', neck='DLAUp', downsample=4, mean_size=None, cfg= None, cfg_model=None):
         assert downsample in [2, 4, 8, 16, 32]
         super().__init__()
 
 
-        self.cfg = cfg['model']
+        #self.cfg = cfg['model']
+        self.cfg = cfg_model
         self.cfg_parent = cfg
         self.num_classes = len(self.cfg_parent['dataset']['writelist'])
         self.get_backbone_features = False if 'get_backbone_features'  not in self.cfg_parent['tester'].keys() else self.cfg_parent['tester']['get_backbone_features']
