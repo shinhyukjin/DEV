@@ -14,7 +14,9 @@ class Hierarchical_Task_Learning:
         self.stat_epoch_nums = stat_epoch_nums
         self.past_losses=[]
         self.loss_graph = {'seg_loss':[],
+
                            'kd_difi_loss': [],
+
                            'size2d_loss':[], 
                            'offset2d_loss':[],
                            'offset3d_loss':['size2d_loss','offset2d_loss'], 
@@ -23,7 +25,7 @@ class Hierarchical_Task_Learning:
                            'depth_loss':['size2d_loss','size3d_loss','offset2d_loss'],
                            'mid_feat_loss':[],
                            'kd_hinton_loss':[],
-                           'roi_feature_loss':[]
+                           # 'roi_feature_loss':[]
                            }
 
     def compute_weight(self,current_loss,epoch):
@@ -69,9 +71,11 @@ class GupnetLoss(nn.Module):
 
     def forward(self, preds, targets, teacher_pred, task_uncertainties=None):
 
+
         kd_loss = self.compute_kd_loss(preds, targets, teacher_pred)
         kd_difi_loss = self.compute_kd_difficulty_loss_only(preds, targets, teacher_pred)
         seg_loss = self.compute_segmentation_loss(preds, targets)
+
         #kd_difi_loss = self.compute_kd_difficulty_loss(preds, targets, teacher_pred)
         bbox2d_loss = self.compute_bbox2d_loss(preds, targets)
         bbox3d_loss = self.compute_bbox3d_loss(preds, targets)
@@ -81,6 +85,7 @@ class GupnetLoss(nn.Module):
         #loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss
         #loss = bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
         loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
+
         
         return loss, self.stat
 
@@ -254,13 +259,13 @@ class GupnetLoss(nn.Module):
         p_t = F.softmax(teacher_input['heatmap'] / T, dim=1)*pos_inds
         hinton_kd_loss = (nn.KLDivLoss(reduction='batchmean')(p_s, p_t) * (T ** 2))/num_pos
 
-        roi_feature_loss = (self.criterion(input['roi_feature_masked'], teacher_input['roi_feature_masked'])) * 0.5
+        # roi_feature_loss = (self.criterion(input['roi_feature_masked'], teacher_input['roi_feature_masked'])) * 0.5
 
-        loss = feature_kd_loss + hinton_kd_loss + roi_feature_loss
+        loss = feature_kd_loss + hinton_kd_loss #+ roi_feature_loss
 
         self.stat['mid_feat_loss'] = feature_kd_loss
         self.stat['kd_hinton_loss'] = hinton_kd_loss
-        self.stat['roi_feature_loss'] = roi_feature_loss
+        # self.stat['roi_feature_loss'] = roi_feature_loss
 
         return loss
 
