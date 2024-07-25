@@ -13,7 +13,7 @@ class Hierarchical_Task_Learning:
         self.term2index = {term:self.index2term.index(term) for term in self.index2term}  #term2index
         self.stat_epoch_nums = stat_epoch_nums
         self.past_losses=[]
-        self.loss_graph = {'seg_loss':[],
+        self.loss_graph = {#'seg_loss':[],
 
                            'kd_difi_loss': [],
 
@@ -25,7 +25,7 @@ class Hierarchical_Task_Learning:
                            'depth_loss':['size2d_loss','size3d_loss','offset2d_loss'],
                            'mid_feat_loss':[],
                            'kd_hinton_loss':[],
-                           # 'roi_feature_loss':[]
+                           'roi_feature_loss':[]
                            }
 
     def compute_weight(self,current_loss,epoch):
@@ -73,18 +73,18 @@ class GupnetLoss(nn.Module):
 
 
         kd_loss = self.compute_kd_loss(preds, targets, teacher_pred)
-        kd_difi_loss = self.compute_kd_difficulty_loss_only(preds, targets, teacher_pred)
-        seg_loss = self.compute_segmentation_loss(preds, targets)
+        #kd_difi_loss = self.compute_kd_difficulty_loss_only(preds, targets, teacher_pred)
+        #seg_loss = self.compute_segmentation_loss(preds, targets)
 
-        #kd_difi_loss = self.compute_kd_difficulty_loss(preds, targets, teacher_pred)
+        kd_difi_loss = self.compute_kd_difficulty_loss(preds, targets, teacher_pred)
         bbox2d_loss = self.compute_bbox2d_loss(preds, targets)
         bbox3d_loss = self.compute_bbox3d_loss(preds, targets)
         #kd_loss = self.compute_kd_loss(preds, teacher_pred)
         
 
         #loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss
-        #loss = bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
-        loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
+        loss = bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
+        #loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
 
         
         return loss, self.stat
@@ -141,13 +141,13 @@ class GupnetLoss(nn.Module):
         neg_weights = torch.pow(1 - target['heatmap'], 4)
 
         loss = 0
-        a = 0.8
+        a = 0.7
 
         # pos_loss = (1 - input['heatmap']) * pos_inds
-        pos_loss = torch.log(input['heatmap']) * torch.pow((a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])), 2) * pos_inds
+        pos_loss = torch.log(input['heatmap']) * torch.pow((a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])), 1.5) * pos_inds
         #pos_loss = torch.log(a * input['heatmap'] + (1 - a) * teacher_input['heatmap']) * torch.pow((a * (1 - input['heatmap']) + (1 - a) * (1 - teacher_input['heatmap'])), 2) * pos_inds
         #neg_loss = torch.log(a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])) * torch.pow(a*input['heatmap']+(1-a)*teacher_input['heatmap'], 2) * neg_inds * neg_weights
-        neg_loss = torch.log(1 - input['heatmap']) * torch.pow(input['heatmap'], 2) * neg_inds * neg_weights
+        neg_loss = torch.log(1 - input['heatmap']) * torch.pow((a*(input['heatmap'])+(1-a)*(teacher_input['heatmap'])), 1.5) * neg_inds * neg_weights
 
         num_pos = pos_inds.float().sum()
 
@@ -172,7 +172,7 @@ class GupnetLoss(nn.Module):
         pos_inds = target['heatmap'].eq(1).float()
         num_pos = pos_inds.float().sum()
 
-        a = 0.8
+        a = 0.7
 
         if num_pos == 0:
             loss = 0
@@ -259,13 +259,13 @@ class GupnetLoss(nn.Module):
         p_t = F.softmax(teacher_input['heatmap'] / T, dim=1)*pos_inds
         hinton_kd_loss = (nn.KLDivLoss(reduction='batchmean')(p_s, p_t) * (T ** 2))/num_pos
 
-        # roi_feature_loss = (self.criterion(input['roi_feature_masked'], teacher_input['roi_feature_masked'])) * 0.5
+        roi_feature_loss = (self.criterion(input['roi_feature_masked'], teacher_input['roi_feature_masked'])) * 0.5
 
-        loss = feature_kd_loss + hinton_kd_loss #+ roi_feature_loss
+        loss = feature_kd_loss + hinton_kd_loss + roi_feature_loss
 
         self.stat['mid_feat_loss'] = feature_kd_loss
         self.stat['kd_hinton_loss'] = hinton_kd_loss
-        # self.stat['roi_feature_loss'] = roi_feature_loss
+        self.stat['roi_feature_loss'] = roi_feature_loss
 
         return loss
 

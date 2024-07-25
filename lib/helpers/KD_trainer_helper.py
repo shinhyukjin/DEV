@@ -70,7 +70,7 @@ class KD_Trainer(object):
         start_epoch = self.epoch
         ei_loss = self.compute_e0_loss()
         loss_weightor = Hierarchical_Task_Learning(ei_loss)
-        torch.cuda.empty_cache()
+        #torch.cuda.empty_cache()
 
         for epoch in range(start_epoch, self.cfg_train['max_epoch']):
             # train one epoch
@@ -167,7 +167,7 @@ class KD_Trainer(object):
             # teacher_feat = self.teacher_model.feat_up(teacher_feat[self.teacher_model.first_level:])
 
             outputs = self.model(inputs,coord_ranges,calibs,targets)
-            torch.cuda.empty_cache()
+            #torch.cuda.empty_cache()
             teacher_outputs = self.teacher_model(inputs, coord_ranges, calibs, targets, mode='teacher', stu_ret=outputs)
 
 
