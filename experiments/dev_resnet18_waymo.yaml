@@ -1,13 +1,13 @@
 random_seed: 444
 
 dataset:
-  type: 'kitti'
+  type: 'waymo'
   root_dir: 'data/'
   train_split_name: 'train'
   val_split_name: 'val'
-  resolution: [ 1280, 384 ]
-  eval_dataset: 'kitti'
-  batch_size: 12
+  resolution: [ 768, 512 ]
+  eval_dataset: 'waymo'
+  batch_size: 40
   class_merging: False
   use_dontcare: False
   use_3d_center: True
@@ -41,7 +41,7 @@ teacher_model:
   sesn_rescale_basis: False
   sesn_scales: [ 0.83, 0.9, 1.0 ]
   scale_index_for_init: 0
-  resume_model: 'output/checkpoint_epoch_140_dla34.pth'
+  resume_model: 'output/checkpoint_epoch_30_teacher_paper_pretrain.pth'
   downsample: 4
 
 
@@ -57,15 +57,14 @@ lr_scheduler:
   decay_list: [90, 120]
 
 trainer:
-  max_epoch: 140
-  eval_frequency: 20 # evaluation interval (in epoch)
-  save_frequency: 60 # checkpoint save interval (in epoch)
+  max_epoch: 30
+  eval_frequency: 30 # evaluation interval (in epoch)
+  save_frequency: 10 # checkpoint save interval (in epoch)
   disp_frequency: 50 # display interval (in batch)
   #disp_frequency: 10 # display interval (in batch)
 
-  log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_st-inside_onlypositive_30__b1_200719'
-  #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_cls_stdifi0703_10__a1_200722'
-  #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_s-t-inside_difi_negweight_40__a1_200720'
+  log_dir: 'output/dev_resnet18_waymo_backbone_hinton__a1_200722'
+#  log_dir: 'output/dev_resnet18_waymo_backbone_hinton_roifeature__b1_200722'
 
   #log_dir: 'output/debuging'
 
@@ -76,6 +75,6 @@ trainer:
 
 
 tester:
-  threshold: 0.2  # confidence filter
+  threshold: 0.1  # confidence filter
   #resume_model: ''
   #resume_model: 'output/checkpoint_epoch_140_res18.pth'
