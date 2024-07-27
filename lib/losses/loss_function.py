@@ -13,9 +13,9 @@ class Hierarchical_Task_Learning:
         self.term2index = {term:self.index2term.index(term) for term in self.index2term}  #term2index
         self.stat_epoch_nums = stat_epoch_nums
         self.past_losses=[]
-        self.loss_graph = {#'seg_loss':[],
+        self.loss_graph = {'seg_loss':[],
 
-                           'kd_difi_loss': [],
+                           #'kd_difi_loss': [],
 
                            'size2d_loss':[], 
                            'offset2d_loss':[],
@@ -23,9 +23,9 @@ class Hierarchical_Task_Learning:
                            'size3d_loss':['size2d_loss','offset2d_loss'], 
                            'heading_loss':['size2d_loss','offset2d_loss'], 
                            'depth_loss':['size2d_loss','size3d_loss','offset2d_loss'],
-                           'mid_feat_loss':[],
-                           'kd_hinton_loss':[],
-                           'roi_feature_loss':[]
+                           #'mid_feat_loss':[],
+                           #'kd_hinton_loss':[],
+                           #'roi_feature_loss':[]
                            }
 
     def compute_weight(self,current_loss,epoch):
@@ -61,7 +61,7 @@ class Hierarchical_Task_Learning:
         self.epoch0_loss = torch.cat([_.unsqueeze(0) for _ in eval_loss.values()]).unsqueeze(0)
 
 
-class GupnetLoss(nn.Module):
+class Gupnet_KD_Loss(nn.Module):
     def __init__(self,epoch):
         super().__init__()
         self.stat = {}
@@ -270,6 +270,89 @@ class GupnetLoss(nn.Module):
         return loss
 
 
+class GupnetLoss(nn.Module):
+    def __init__(self, epoch):
+        super().__init__()
+        self.stat = {}
+        self.epoch = epoch
+
+    def forward(self, preds, targets, task_uncertainties=None):
+
+        seg_loss = self.compute_segmentation_loss(preds, targets)
+        bbox2d_loss = self.compute_bbox2d_loss(preds, targets)
+        bbox3d_loss = self.compute_bbox3d_loss(preds, targets)
+
+        loss = seg_loss + bbox2d_loss + bbox3d_loss
+
+        return loss, self.stat
+
+    def compute_segmentation_loss(self, input, target):
+        input['heatmap'] = torch.clamp(input['heatmap'].sigmoid_(), min=1e-4, max=1 - 1e-4)
+        loss = focal_loss(input['heatmap'], target['heatmap'])
+        self.stat['seg_loss'] = loss
+        return loss
+
+    def compute_bbox2d_loss(self, input, target):
+
+        if target['mask_2d'].sum() <= 0:
+            size2d_loss = torch.tensor(0.0).to(input['size_2d'].device)
+            offset2d_loss = torch.tensor(0.0).to(input['size_2d'].device)
+        else:
+            # compute size2d loss
+
+            size2d_input = extract_input_from_tensor(input['size_2d'], target['indices'], target['mask_2d'])
+            size2d_target = extract_target_from_tensor(target['size_2d'], target['mask_2d'])
+            size2d_loss = F.l1_loss(size2d_input, size2d_target, reduction='mean')
+            # compute offset2d loss
+            offset2d_input = extract_input_from_tensor(input['offset_2d'], target['indices'], target['mask_2d'])
+            offset2d_target = extract_target_from_tensor(target['offset_2d'], target['mask_2d'])
+            offset2d_loss = F.l1_loss(offset2d_input, offset2d_target, reduction='mean')
+
+        loss = offset2d_loss + size2d_loss
+        self.stat['offset2d_loss'] = offset2d_loss
+        self.stat['size2d_loss'] = size2d_loss
+        return loss
+
+    def compute_bbox3d_loss(self, input, target, mask_type='mask_2d'):
+
+        if target[mask_type].sum() <= 0:
+            depth_loss = torch.tensor(0.0).to(input['size_3d'].device)
+            offset3d_loss = torch.tensor(0.0).to(input['size_3d'].device)
+            size3d_loss = torch.tensor(0.0).to(input['size_3d'].device)
+            heading_loss = torch.tensor(0.0).to(input['size_3d'].device)
+        else:
+            # compute depth loss
+            depth_input = input['depth'][input['train_tag']]
+            depth_input, depth_log_variance = depth_input[:, 0:1], depth_input[:, 1:2]
+            depth_target = extract_target_from_tensor(target['depth'], target[mask_type])
+            depth_loss = laplacian_aleatoric_uncertainty_loss(depth_input, depth_target, depth_log_variance)
+
+            # compute offset3d loss
+            offset3d_input = input['offset_3d'][input['train_tag']]
+            offset3d_target = extract_target_from_tensor(target['offset_3d'], target[mask_type])
+            offset3d_loss = F.l1_loss(offset3d_input, offset3d_target, reduction='mean')
+
+            # compute size3d loss
+            size3d_input = input['size_3d'][input['train_tag']]
+            size3d_target = extract_target_from_tensor(target['size_3d'], target[mask_type])
+            size3d_loss = F.l1_loss(size3d_input[:, 1:], size3d_target[:, 1:], reduction='mean') * 2 / 3 + \
+                          laplacian_aleatoric_uncertainty_loss(size3d_input[:, 0:1], size3d_target[:, 0:1],
+                                                               input['h3d_log_variance'][input['train_tag']]) / 3
+            # size3d_loss = F.l1_loss(size3d_input[:,1:], size3d_target[:,1:], reduction='mean')+\
+            #       laplacian_aleatoric_uncertainty_loss(size3d_input[:,0:1], size3d_target[:,0:1], input['h3d_log_variance'][input['train_tag']])
+            # compute heading loss
+            heading_loss = compute_heading_loss(input['heading'][input['train_tag']],
+                                                target[mask_type],  ## NOTE
+                                                target['heading_bin'],
+                                                target['heading_res'])
+        loss = depth_loss + offset3d_loss + size3d_loss + heading_loss
+
+        self.stat['depth_loss'] = depth_loss
+        self.stat['offset3d_loss'] = offset3d_loss
+        self.stat['size3d_loss'] = size3d_loss
+        self.stat['heading_loss'] = heading_loss
+
+        return loss
 
 
 

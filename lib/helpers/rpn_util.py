@@ -203,12 +203,11 @@ def evaluate_waymo_results_verbose(results_folder, conf= None, use_logging= Fals
     # Find home in path
     # Typically the conda environment is /home/abc/anaconda3/envs/py36_waymo_tf/ or /mnt/home/abc/anaconda3/envs/py36_waymo_tf/
     curr_folder      = os.getcwd().split("/")
-    home_word_index  = [idx for idx, s in enumerate(curr_folder) if 'home' in s][0]
+    home_word_index  = [idx for idx, s in enumerate(curr_folder) if '' in s][0]
     home_user_folder = "/".join(curr_folder[:(home_word_index+2)])
 
-    path             = os.path.join(home_user_folder, "anaconda3/envs/py36_waymo_tf/bin/python") #/home/abc/anaconda3/envs/py36_waymo_tf/
+    path = '/opt/conda/bin/python3'  # /home/abc/anaconda3/envs/py36_waymo_tf/
     pd_set           = os.path.join("data/waymo/ImageSets", conf['dataset']['val_split_name']+ ".txt")
-
     command_0_7      = path + " -u data/waymo/waymo_eval.py --predictions "     + results_folder + " --pd_set " + pd_set
     command_0_5      = path + " -u data/waymo/waymo_eval_0_5.py --predictions " + results_folder + " --pd_set " + pd_set
 

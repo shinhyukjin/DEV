@@ -169,6 +169,20 @@ def main():
                       warmup_lr_scheduler=warmup_lr_scheduler,
                       logger=logger)
     kd_trainer.train()
+
+    # trainer = Trainer(cfg=cfg,
+    #                   model=model,
+    #                   optimizer=optimizer,
+    #                   train_loader=train_loader,
+    #                   test_loader=val_loader,
+    #                   lr_scheduler=lr_scheduler,
+    #                   warmup_lr_scheduler=warmup_lr_scheduler,
+    #                   logger=logger)
+    # trainer.train()
+
+
+
+
     tester = Tester(cfg, model, val_loader, logger)
     tester.test()
 

@@ -56,7 +56,7 @@ trainer:
   disp_frequency: 50 # display interval (in batch)
   #disp_frequency: 10 # display interval (in batch)
 
-  log_dir: 'output/dev_gup_resnet18_waymo_R3KD_pos_neg_difi_p15_0703_a2_200725'
+  log_dir: 'output/dev_gup_resnet18_waymo_R3KD_pos_neg_difi_p15_0703_a2_200727_debug'
 #  log_dir: 'output/dev_resnet18_waymo_backbone_hinton_roifeature__b1_200722'
 
   #log_dir: 'output/debuging'
