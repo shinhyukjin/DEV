@@ -16,7 +16,7 @@ from lib.helpers.save_helper import get_checkpoint_state
 from lib.helpers.save_helper import save_checkpoint
 from lib.helpers.save_helper import load_checkpoint, load_teacher_head_checkpoint
 from lib.helpers.save_helper import load_teacher_checkpoint
-from lib.losses.loss_function import GupnetLoss,Hierarchical_Task_Learning
+from lib.losses.loss_function import Gupnet_KD_Loss,Hierarchical_Task_Learning
 from lib.helpers.decode_helper import extract_dets_from_outputs
 from lib.helpers.decode_helper import decode_detections
 from lib.helpers.rpn_util import *
@@ -125,7 +125,7 @@ class KD_Trainer(object):
                     targets[key] = targets[key].to(self.device)
 
                 # train one batch
-                criterion = GupnetLoss(self.epoch)
+                criterion = Gupnet_KD_Loss(self.epoch)
                 outputs = self.model(inputs,coord_ranges,calibs,targets)
 
                 teacher_outputs = self.teacher_model(inputs, coord_ranges, calibs, targets, mode='teacher', stu_ret = outputs)
@@ -161,7 +161,7 @@ class KD_Trainer(object):
             for key in targets.keys(): targets[key] = targets[key].to(self.device)
             # train one batch
             self.optimizer.zero_grad()
-            criterion = GupnetLoss(self.epoch)
+            criterion = Gupnet_KD_Loss(self.epoch)
 
             # teacher_feat = self.teacher_model.backbone(inputs)
             # teacher_feat = self.teacher_model.feat_up(teacher_feat[self.teacher_model.first_level:])
