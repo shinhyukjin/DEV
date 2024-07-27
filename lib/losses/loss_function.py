@@ -13,9 +13,9 @@ class Hierarchical_Task_Learning:
         self.term2index = {term:self.index2term.index(term) for term in self.index2term}  #term2index
         self.stat_epoch_nums = stat_epoch_nums
         self.past_losses=[]
-        self.loss_graph = {'seg_loss':[],
+        self.loss_graph = {#'seg_loss':[],
 
-                           #'kd_difi_loss': [],
+                           'kd_difi_loss': [],
 
                            'size2d_loss':[], 
                            'offset2d_loss':[],
@@ -23,9 +23,9 @@ class Hierarchical_Task_Learning:
                            'size3d_loss':['size2d_loss','offset2d_loss'], 
                            'heading_loss':['size2d_loss','offset2d_loss'], 
                            'depth_loss':['size2d_loss','size3d_loss','offset2d_loss'],
-                           #'mid_feat_loss':[],
-                           #'kd_hinton_loss':[],
-                           #'roi_feature_loss':[]
+                           'mid_feat_loss':[],
+                           'kd_hinton_loss':[],
+                           'roi_feature_loss':[]
                            }
 
     def compute_weight(self,current_loss,epoch):
