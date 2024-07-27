@@ -142,12 +142,13 @@ class Gupnet_KD_Loss(nn.Module):
 
         loss = 0
         a = 0.7
+        gamma = 1.5
 
         # pos_loss = (1 - input['heatmap']) * pos_inds
-        pos_loss = torch.log(input['heatmap']) * torch.pow((a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])), 1.5) * pos_inds
+        pos_loss = torch.log(input['heatmap']) * torch.pow((a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])), gamma) * pos_inds
         #pos_loss = torch.log(a * input['heatmap'] + (1 - a) * teacher_input['heatmap']) * torch.pow((a * (1 - input['heatmap']) + (1 - a) * (1 - teacher_input['heatmap'])), 2) * pos_inds
         #neg_loss = torch.log(a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])) * torch.pow(a*input['heatmap']+(1-a)*teacher_input['heatmap'], 2) * neg_inds * neg_weights
-        neg_loss = torch.log(1 - input['heatmap']) * torch.pow((a*(input['heatmap'])+(1-a)*(teacher_input['heatmap'])), 1.5) * neg_inds * neg_weights
+        neg_loss = torch.log(1 - input['heatmap']) * torch.pow((a*(input['heatmap'])+(1-a)*(teacher_input['heatmap'])), gamma) * neg_inds * neg_weights
 
         num_pos = pos_inds.float().sum()
 
@@ -159,6 +160,7 @@ class Gupnet_KD_Loss(nn.Module):
         else:
             loss = loss - (pos_difi_loss + neg_difi_loss) / num_pos
 
+        #loss = loss*2
 
         self.stat['kd_difi_loss'] = loss
         return loss
@@ -254,10 +256,12 @@ class Gupnet_KD_Loss(nn.Module):
         pos_inds = target['heatmap'].eq(1).float()
         num_pos = pos_inds.float().sum()
 
+        pos_inds = pos_inds.sum(dim=1, keepdim=True)
+
         T = 4
         p_s = F.log_softmax(input['heatmap'] / T, dim=1)*pos_inds
         p_t = F.softmax(teacher_input['heatmap'] / T, dim=1)*pos_inds
-        hinton_kd_loss = (nn.KLDivLoss(reduction='batchmean')(p_s, p_t) * (T ** 2))/num_pos
+        hinton_kd_loss = (nn.KLDivLoss(reduction='sum')(p_s, p_t) * (T ** 2))/num_pos
 
         roi_feature_loss = (self.criterion(input['roi_feature_masked'], teacher_input['roi_feature_masked'])) * 0.5
 
