@@ -47,6 +47,7 @@ teacher_model:
 
 optimizer:
   type: 'adam'
+#  lr: 0.000625
   lr: 0.00125
   #lr: 0.001
   weight_decay: 0.00001
@@ -63,7 +64,7 @@ trainer:
   disp_frequency: 50 # display interval (in batch)
   #disp_frequency: 10 # display interval (in batch)
 
-  log_dir: 'output/dev_resnet18_waymo_backbone_hinton__a1_200722'
+  log_dir: 'output/dev_resnet18_lr00125_batch40_0801'
 #  log_dir: 'output/dev_resnet18_waymo_backbone_hinton_roifeature__b1_200722'
 
   #log_dir: 'output/debuging'
@@ -78,3 +79,4 @@ tester:
   threshold: 0.1  # confidence filter
   #resume_model: ''
   #resume_model: 'output/checkpoint_epoch_140_res18.pth'
+  tester_metrics: 'waymo'

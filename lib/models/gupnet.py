@@ -307,8 +307,8 @@ class GUPNet(nn.Module):
             res['train_tag'] = torch.zeros(1).type(torch.bool).to(device_id)
             res['heading'] = torch.zeros([1,24]).to(device_id)
             res['h3d_log_variance'] = torch.zeros([1,1]).to(device_id)
-            res['roi_feature_masked'] = torch.zeros([1,69,7,7]).to(device_id)
-            #res['roi_feature_masked'] = torch.zeros([1, 69, 13, 13]).to(device_id)
+            res['roi_feature_masked'] = torch.zeros([1,70,7,7]).to(device_id)
+            #res['roi_feature_masked'] = torch.zeros([1, 70, 13, 13]).to(device_id)
         return res
 
     def get_roi_feat(self,feat,inds,mask,ret,calibs,coord_ranges,cls_ids):

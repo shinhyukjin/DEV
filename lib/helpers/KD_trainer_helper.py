@@ -49,7 +49,7 @@ class KD_Trainer(object):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.class_name = test_loader.dataset.class_name
         self.tester_metrics = 'kitti' if 'tester_metrics' not in self.cfg_test.keys() else self.cfg_test['tester_metrics']
-        self.debug = 1
+        self.debug = 0
 
         # assert os.path.exists(self.cfg_student['resume_model'])
         # load_teacher_head_checkpoint(self.model, self.optimizer, self.cfg_student['resume_model'], self.logger, map_location=self.device)
@@ -116,7 +116,7 @@ class KD_Trainer(object):
 
         disp_dict = {}
         progress_bar = tqdm.tqdm(total=len(self.train_loader), leave=True, desc='pre-training loss stat')
-        with torch.no_grad():        
+        with torch.no_grad():
             for batch_idx, (inputs,calibs,coord_ranges, targets, info) in enumerate(self.train_loader):
                 inputs = inputs.to(self.device)
                 calibs = calibs.to(self.device)
@@ -132,13 +132,13 @@ class KD_Trainer(object):
 
 
                 _, loss_terms = criterion(outputs, targets, teacher_outputs)
-                
+
                 trained_batch = batch_idx + 1
                 # accumulate statistics
                 for key in loss_terms.keys():
                     if key not in disp_dict.keys():
                         disp_dict[key] = 0
-                    disp_dict[key] += loss_terms[key]      
+                    disp_dict[key] += loss_terms[key]
                 progress_bar.update()
 
                 if self.debug == 1:
@@ -147,8 +147,8 @@ class KD_Trainer(object):
 
             progress_bar.close()
             for key in disp_dict.keys():
-                disp_dict[key] /= trained_batch             
-        return disp_dict        
+                disp_dict[key] /= trained_batch
+        return disp_dict
     def train_one_epoch(self,loss_weights=None):
         self.model.train()
         self.teacher_model.eval()

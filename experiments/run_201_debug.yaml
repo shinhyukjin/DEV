@@ -21,27 +21,15 @@ model:
   type: 'gupnet'
   backbone: 'dla34'
   neck: 'DLAUp'
-  use_conv: 'sesn'
-  replace_style: 'max_scale_after_dla34_layer'
-  sesn_norm_per_scale: False
-  sesn_rescale_basis: False
-  sesn_scales: [0.83, 0.9, 1.0 ]
-  scale_index_for_init: 0
   downsample: 4
+  resume_model: 'output/speed/checkpoint_epoch_140.pth'
 
 teacher_model:
   type: 'gupnet'
   backbone: 'dla34'
   neck: 'DLAUp'
-  use_conv: 'sesn'
-  replace_style: 'max_scale_after_dla34_layer'
-  sesn_norm_per_scale: False
-  sesn_rescale_basis: False
-  sesn_scales: [ 0.83, 0.9, 1.0 ]
-  scale_index_for_init: 0
-  resume_model: 'output/speed/Dev_teacher_140_dla34.pth'
+  resume_model: 'output/speed/checkpoint_epoch_140.pth'
   downsample: 4
-
 
 optimizer:
   type: 'adam'
@@ -59,8 +47,7 @@ trainer:
   save_frequency: 20 # checkpoint save interval (in epoch)
   disp_frequency: 20 # display interval (in batch)
   log_dir: 'output/speed'
-  #resume_model: '...'  
+  #resume_model: '...'
 tester:
   threshold: 0.2  # confidence filter
-  #resume_model: ''  
-  
+  #resume_model: '...'

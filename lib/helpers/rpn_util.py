@@ -207,7 +207,7 @@ def evaluate_waymo_results_verbose(results_folder, conf= None, use_logging= Fals
     home_user_folder = "/".join(curr_folder[:(home_word_index+2)])
 
     path = '/opt/conda/bin/python3'  # /home/abc/anaconda3/envs/py36_waymo_tf/
-    pd_set           = os.path.join("data/waymo/ImageSets", conf['dataset']['val_split_name']+ ".txt")
+    pd_set = os.path.join("/workspace/3DODKD/projects/waymo/ImageSets", 'val' + ".txt")
     command_0_7      = path + " -u data/waymo/waymo_eval.py --predictions "     + results_folder + " --pd_set " + pd_set
     command_0_5      = path + " -u data/waymo/waymo_eval_0_5.py --predictions " + results_folder + " --pd_set " + pd_set
 

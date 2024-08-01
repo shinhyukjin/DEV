@@ -27,6 +27,7 @@ model:
   sesn_rescale_basis: False
   sesn_scales: [0.83, 0.9, 1.0 ]
   scale_index_for_init: 0
+  downsample: 4
 
 teacher_model:
   type: 'gupnet'

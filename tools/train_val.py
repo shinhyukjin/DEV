@@ -22,6 +22,7 @@ from lib.helpers.KD_trainer_helper import KD_Trainer
 from lib.helpers.tester_helper import Tester
 from datetime import datetime
 
+kd = 0
 parser = argparse.ArgumentParser(description='implementation of DEVIANT')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true', help='evaluate model on validation set')
 parser.add_argument('--config', type=str, default = 'experiments/config.yaml')
@@ -124,8 +125,8 @@ def main():
 
     # build model
     model = build_model(cfg,train_loader.dataset.cls_mean_size)
-
-    teacher_model = build_teacher_model(cfg, train_loader.dataset.cls_mean_size)
+    if kd == 1 :
+        teacher_model = build_teacher_model(cfg, train_loader.dataset.cls_mean_size)
 
 
 
@@ -158,27 +159,29 @@ def main():
 
     # build lr & bnm scheduler
     lr_scheduler, warmup_lr_scheduler = build_lr_scheduler(cfg['lr_scheduler'], optimizer, last_epoch=-1)
-
-    kd_trainer = KD_Trainer(cfg=cfg,
-                      model=model,
-                      teacher_model=teacher_model,
-                      optimizer=optimizer,
-                      train_loader=train_loader,
-                      test_loader=val_loader,
-                      lr_scheduler=lr_scheduler,
-                      warmup_lr_scheduler=warmup_lr_scheduler,
-                      logger=logger)
-    kd_trainer.train()
-
-    # trainer = Trainer(cfg=cfg,
-    #                   model=model,
-    #                   optimizer=optimizer,
-    #                   train_loader=train_loader,
-    #                   test_loader=val_loader,
-    #                   lr_scheduler=lr_scheduler,
-    #                   warmup_lr_scheduler=warmup_lr_scheduler,
-    #                   logger=logger)
-    # trainer.train()
+    if kd == 1 :
+        print("kd")
+        kd_trainer = KD_Trainer(cfg=cfg,
+                          model=model,
+                          teacher_model=teacher_model,
+                          optimizer=optimizer,
+                          train_loader=train_loader,
+                          test_loader=val_loader,
+                          lr_scheduler=lr_scheduler,
+                          warmup_lr_scheduler=warmup_lr_scheduler,
+                          logger=logger)
+        kd_trainer.train()
+    else :
+        print("train")
+        trainer = Trainer(cfg=cfg,
+                          model=model,
+                          optimizer=optimizer,
+                          train_loader=train_loader,
+                          test_loader=val_loader,
+                          lr_scheduler=lr_scheduler,
+                          warmup_lr_scheduler=warmup_lr_scheduler,
+                          logger=logger)
+        trainer.train()
 
 
 

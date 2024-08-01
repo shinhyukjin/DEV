@@ -38,7 +38,7 @@ trainer:
   save_frequency: 10 # checkpoint save interval (in epoch)
   disp_frequency: 50 # display interval (in batch)
   #disp_frequency: 10 # display interval (in batch)
-  log_dir: 'output/gup_resnet18_waymo'
+  log_dir: 'output/dev_dev_resnet18_waymo_R3KD_difi_p15_0703_region_20_midfeat_10_hinton_10_a2_200729_gpu2'
   #resume_model: '...'  
 tester:
   threshold: 0.1  # confidence filter

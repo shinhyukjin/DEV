@@ -39,7 +39,8 @@ class Tester(object):
     def test(self):
         torch.set_grad_enabled(False)
         self.model.eval()
-
+        # starter = torch.cuda.Event(enable_timing=True)
+        # ender = torch.cuda.Event(enable_timing=True)
         # from fvcore.nn import FlopCountAnalysis, flop_count_table
         # input = torch.zeros((1, 3, 384, 1280)).float().cuda()
         # flops = FlopCountAnalysis(self.model.backbone.cuda(), input)
@@ -47,15 +48,16 @@ class Tester(object):
 
         results = {}
         progress_bar = tqdm.tqdm(total=len(self.data_loader), leave=True, desc='Evaluation Progress')
+        infer_time_100 = 0
         for batch_idx, (inputs, calibs, coord_ranges, _, info) in enumerate(self.data_loader):
             # load evaluation data and move data to current device.
             inputs = inputs.to(self.device)
             calibs = calibs.to(self.device)
             coord_ranges = coord_ranges.to(self.device)
-
+            # starter.record()
             # the outputs of centernet
             outputs = self.model(inputs,coord_ranges,calibs,K=50,mode='test')
-
+            # ender.record()
             if self.get_backbone_features:
                 for level in range(1):#(len(outputs)):
                     outputs_level = outputs[level].cpu().clone().detach().numpy().astype(np.float16)
@@ -71,6 +73,17 @@ class Tester(object):
             dets = extract_dets_from_outputs(outputs=outputs, K=50)
             dets = dets.detach().cpu().numpy()
 
+            # torch.cuda.synchronize()
+            # if batch_idx == 0 :
+            #     infer_time = 0
+            # else :
+            #     infer_time = starter.elapsed_time(ender)
+            # print("Elapsed time: {} s".format(infer_time * 1e-3))
+            # infer_time_100 = infer_time_100 + infer_time
+            #
+            # if batch_idx == 1000:
+            #     print("100_Elapsed time: {} s".format(infer_time_100 * 1e-6))
+            #     break
 
             # get corresponding calibs & transform tensor to numpy
             calibs = [self.data_loader.dataset.get_calib(index)  for index in info['img_id']]

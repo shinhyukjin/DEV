@@ -6,7 +6,8 @@ dataset:
   train_split_name: 'train'
   val_split_name: 'val'
   resolution: [ 768, 512 ]
-  batch_size: 40
+  eval_dataset: 'waymo'
+  batch_size: 20
   class_merging: False
   use_dontcare: False
   use_3d_center: True
@@ -26,10 +27,24 @@ model:
   sesn_rescale_basis: False
   sesn_scales: [ 0.83, 0.9, 1.0 ]
   scale_index_for_init: 0
+  downsample: 2
+
+teacher_model:
+  type: 'gupnet'
+  backbone: 'dla34'
+  neck: 'DLAUp'
+  use_conv: 'sesn'
+  replace_style: 'max_scale_after_dla34_layer'
+  sesn_norm_per_scale: False
+  sesn_rescale_basis: False
+  sesn_scales: [ 0.83, 0.9, 1.0 ]
+  scale_index_for_init: 0
+  resume_model: 'output/checkpoint_epoch_140_dla34.pth'
+  downsample: 4
 
 optimizer:
   type: 'adam'
-  lr: 0.00125
+  lr: 0.000625 #0.00125
   weight_decay: 0.00001
 
 lr_scheduler:
@@ -42,7 +57,7 @@ trainer:
   eval_frequency: 10 # evaluation interval (in epoch)
   save_frequency: 10 # checkpoint save interval (in epoch)
   disp_frequency: 50 # display interval (in batch)
-  log_dir: 'output/'
+  log_dir: 'output/dev_resnet18_lr000625_batch20_0731'
   #resume_model: '...'  
 tester:
   threshold: 0.1  # confidence filter
