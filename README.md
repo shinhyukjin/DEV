@@ -15,6 +15,7 @@
 ```
 pip install opencv-python pandas
 ```
+
 - **KITTI, nuScenes and Waymo Data**
 
 Follow instructions of [data_setup_README.md](data/data_setup_README.md) to setup KITTI, nuScenes and Waymo as follows:
@@ -77,7 +78,7 @@ conda install pandas
 pip3 install waymo-open-dataset-tf-2-4-0 --user
 ```
 
-## Training
+## Training & inference
 
 Train the model:
 
@@ -85,8 +86,7 @@ Train the model:
 chmod +x scripts_training.sh
 ./scripts_training.sh
 ```
-
-## inference
+inference the model:
 
 ```bash
 chmod +x scripts_inference.sh
