@@ -6,7 +6,7 @@ Download the full [KITTI 3D Object detection](http://www.cvlibs.net/datasets/kit
 - [camera calibration matrices](https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_calib.zip)  of object data set (16 MB)
 - [training labels](https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_label_2.zip) of object data set (5 MB)
 
-Download the [nuScenes](https://www.nuscenes.org/nuscenes#download) and [Waymo](https://waymo.com/open/download/) datasets. Note- Both these datasets are quite big and requires about 1TB storage space each.
+Download the [Waymo](https://waymo.com/open/download/) datasets. Note- Both these datasets are quite big and requires about 1TB storage space each.
 
 Setup KITTI, nuScenes and Waymo as follows:
 
