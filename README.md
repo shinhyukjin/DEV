@@ -66,37 +66,16 @@ DEVIANT
 ```
 
 
-- **AP Evaluation**
-
-Run the following to generate the KITTI binaries corresponding to `R40`:
-
 ```bash
 sudo apt-get install libopenblas-dev libboost-dev libboost-all-dev gfortran
 sh data/KITTI/kitti_split1/devkit/cpp/build.sh
 ```
 
-We finally setup the Waymo evaluation. The Waymo evaluation is setup in a different environment `py36_waymo_tf` to avoid package conflicts with our DEVIANT environment:
-
-```bash
-# Set up environment
-conda create -n py36_waymo_tf python=3.7
-conda activate py36_waymo_tf
-conda install cudatoolkit=11.3 -c pytorch
-
-# Newer versions of tf are not in conda. tf>=2.4.0 is compatible with conda.
+```
 pip install tensorflow-gpu==2.4
 conda install pandas
 pip3 install waymo-open-dataset-tf-2-4-0 --user
 ```
-
-To verify that your Waymo evaluation is working correctly, pass the ground truth labels as predictions for a sanity check. Type the following:
-
-```bash
-/mnt/home/kumarab6/anaconda3/envs/py36_waymo_tf/bin/python -u data/waymo/waymo_eval.py --sanity
-```
-
-You should see AP numbers as 100 in every entry after running this sanity check.
-
 
 ## Training
 
@@ -106,6 +85,8 @@ Train the model:
 chmod +x scripts_training.sh
 ./scripts_training.sh
 ```
+
+## inference
 
 ```bash
 chmod +x scripts_inference.sh
