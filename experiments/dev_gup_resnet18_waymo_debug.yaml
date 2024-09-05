@@ -49,6 +49,8 @@ lr_scheduler:
   decay_rate: 0.1
   decay_list: [18, 26]
 
+
+
 trainer:
   max_epoch: 30
   eval_frequency: 30 # evaluation interval (in epoch)

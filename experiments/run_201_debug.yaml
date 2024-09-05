@@ -47,6 +47,7 @@ trainer:
   save_frequency: 20 # checkpoint save interval (in epoch)
   disp_frequency: 20 # display interval (in batch)
   log_dir: 'output/speed'
+  #log_dir: 'output/eval'
   #resume_model: '...'
 tester:
   threshold: 0.2  # confidence filter

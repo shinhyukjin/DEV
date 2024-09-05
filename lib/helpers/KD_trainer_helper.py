@@ -162,21 +162,11 @@ class KD_Trainer(object):
             # train one batch
             self.optimizer.zero_grad()
             criterion = Gupnet_KD_Loss(self.epoch)
-
-            # teacher_feat = self.teacher_model.backbone(inputs)
-            # teacher_feat = self.teacher_model.feat_up(teacher_feat[self.teacher_model.first_level:])
-
             outputs = self.model(inputs,coord_ranges,calibs,targets)
-            #torch.cuda.empty_cache()
             teacher_outputs = self.teacher_model(inputs, coord_ranges, calibs, targets, mode='teacher', stu_ret=outputs)
-
-
-            #teacher_outputs = self.teacher_model(inputs, coord_ranges, calibs, targets)
 
             total_loss, loss_terms = criterion(outputs, targets, teacher_outputs)
 
-            #del teacher_feat
-            #torch.cuda.empty_cache()
             
             if loss_weights is not None:
                 total_loss = torch.zeros(1).cuda()

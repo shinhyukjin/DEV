@@ -40,7 +40,7 @@ teacher_model:
   sesn_scales: [ 0.83, 0.9, 1.0 ]
   scale_index_for_init: 0
   resume_model: 'output/checkpoint_epoch_140_dla34.pth'
-
+  downsample: 4
 
 optimizer:
   type: 'adam'

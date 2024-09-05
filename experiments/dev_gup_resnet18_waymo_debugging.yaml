@@ -35,7 +35,7 @@ model:
   backbone: 'resnet18'
   neck: 'DLAUp'
   downsample: 2
-  resume_model: 'Dev-Gup_resnet18_epoch_140.pth'
+  resume_model: 'output/Dev-Gup_resnet18_epoch_140.pth'
 
 
 teacher_model:
@@ -48,7 +48,7 @@ teacher_model:
   sesn_rescale_basis: False
   sesn_scales: [ 0.83, 0.9, 1.0 ]
   scale_index_for_init: 0
-  resume_model: 'output/speed/Dev_teacher_140_dla34.pth'
+  resume_model: 'output/Dev_teacher_140_dla34.pth'
   downsample: 4
 
 

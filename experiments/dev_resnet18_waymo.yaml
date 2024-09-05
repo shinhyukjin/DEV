@@ -41,7 +41,7 @@ teacher_model:
   sesn_rescale_basis: False
   sesn_scales: [ 0.83, 0.9, 1.0 ]
   scale_index_for_init: 0
-  resume_model: 'output/checkpoint_epoch_30_teacher_paper_pretrain.pth'
+  resume_model: 'output/checkpoint_epoch_30.pth'
   downsample: 4
 
 
@@ -63,8 +63,8 @@ trainer:
   save_frequency: 10 # checkpoint save interval (in epoch)
   disp_frequency: 50 # display interval (in batch)
   #disp_frequency: 10 # display interval (in batch)
-
-  log_dir: 'output/dev_resnet18_lr00125_batch40_0801'
+  log_dir: 'output/dev_dev_resnet18_waymo_R3KD_difi_p15_0802_region_05_midfeat_03_hinton_10_T4_a2_200806_gpu3'
+  #log_dir: 'output/dev_resnet18_lr00125_batch40_gpu3_kd_0805'
 #  log_dir: 'output/dev_resnet18_waymo_backbone_hinton_roifeature__b1_200722'
 
   #log_dir: 'output/debuging'

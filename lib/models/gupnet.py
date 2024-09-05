@@ -199,7 +199,7 @@ class GUPNet(nn.Module):
                 #get roi feature
                 roi_feature_masked = roi_align(feat,box2d_masked,[7,7])
 
-                #roi_feature_masked_13x13 = roi_align(feat, box2d_masked, [13, 13])
+                roi_feature_masked_13x13 = roi_align(feat, box2d_masked, [13, 13])
 
                 #get coord range of each roi
                 coord_ranges_mask2d = coord_ranges[box2d_masked[:,0].long()]
@@ -298,8 +298,8 @@ class GUPNet(nn.Module):
             res['offset_3d'] = self.offset_3d(roi_feature_masked)[:,:,0,0]
             res['size_3d']= size3d_offset
             res['h3d_log_variance'] = h3d_log_std
-            #res['roi_feature_masked'] = roi_feature_masked_13x13
-            res['roi_feature_masked'] = roi_feature_masked
+            res['roi_feature_masked'] = roi_feature_masked_13x13
+            #res['roi_feature_masked'] = roi_feature_masked
         else:
             res['depth'] = torch.zeros([1,2]).to(device_id)
             res['offset_3d'] = torch.zeros([1,2]).to(device_id)
@@ -307,8 +307,8 @@ class GUPNet(nn.Module):
             res['train_tag'] = torch.zeros(1).type(torch.bool).to(device_id)
             res['heading'] = torch.zeros([1,24]).to(device_id)
             res['h3d_log_variance'] = torch.zeros([1,1]).to(device_id)
-            res['roi_feature_masked'] = torch.zeros([1,70,7,7]).to(device_id)
-            #res['roi_feature_masked'] = torch.zeros([1, 70, 13, 13]).to(device_id)
+            #res['roi_feature_masked'] = torch.zeros([1,70,7,7]).to(device_id)
+            res['roi_feature_masked'] = torch.zeros([1, 64, 13, 13]).to(device_id)
         return res
 
     def get_roi_feat(self,feat,inds,mask,ret,calibs,coord_ranges,cls_ids):

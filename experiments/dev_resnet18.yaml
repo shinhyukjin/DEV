@@ -17,26 +17,24 @@ dataset:
   scale: 0.4
   shift: 0.1
 
-model:
-  type: 'gupnet'
-  backbone: 'resnet18'
-  neck: 'DLAUp'
-  use_conv: 'sesn'
-  replace_style: 'max_scale_after_dla34_layer'
-  sesn_norm_per_scale: False
-  sesn_rescale_basis: False
-  sesn_scales: [ 0.83, 0.9, 1.0 ]
-  scale_index_for_init: 0
-  downsample: 2
-  #resume_model: 'output/checkpoint_epoch_140_dla34.pth'
-
 #model:
 #  type: 'gupnet'
 #  backbone: 'resnet18'
 #  neck: 'DLAUp'
+#  use_conv: 'sesn'
+#  replace_style: 'max_scale_after_dla34_layer'
+#  sesn_norm_per_scale: False
+#  sesn_rescale_basis: False
+#  sesn_scales: [ 0.83, 0.9, 1.0 ]
+#  scale_index_for_init: 0
 #  downsample: 2
-#  #resume_model: 'output/checkpoint_epoch_140_dla34.pth'
+  #resume_model: 'output/checkpoint_epoch_140_dla34.pth'
 
+model:
+  type: 'gupnet'
+  backbone: 'resnet18'
+  neck: 'DLAUp'
+  downsample: 2
 
 teacher_model:
   type: 'gupnet'
@@ -48,7 +46,7 @@ teacher_model:
   sesn_rescale_basis: False
   sesn_scales: [ 0.83, 0.9, 1.0 ]
   scale_index_for_init: 0
-  resume_model: 'output/checkpoint_epoch_140_dla34.pth'
+  resume_model: 'output/checkpoint_epoch_140.pth'
   downsample: 4
 
 
@@ -76,7 +74,7 @@ trainer:
   #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_cls_stdifi0802_pow2_05__b1_200725'
   #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_difi_pos_neg_p15_0703__b1_200725'
   #log_dir: 'output/dev_gpu_resnet18_backbone_hinton_midfeature_boxfeature7x7_05_difi_pos_neg_p15_0703__b2_200725'
-  log_dir: 'output/dev_resnet18_backbone_hinton_fix_midfeature_boxfeature7x7_05_difi_pos_neg_b1_p15_0703__a1_200727'
+  log_dir: 'output/dev_gup_resnet18_backbone_hinton_fix_midfeature_10_region10_boxfeature13x13_10_difi_pos_neg_b1_p15_0802__a1_200814'
 
 
   #log_dir: 'output/debuging'

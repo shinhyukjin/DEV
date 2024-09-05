@@ -22,7 +22,7 @@ from lib.helpers.KD_trainer_helper import KD_Trainer
 from lib.helpers.tester_helper import Tester
 from datetime import datetime
 
-kd = 0
+kd = 1
 parser = argparse.ArgumentParser(description='implementation of DEVIANT')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true', help='evaluate model on validation set')
 parser.add_argument('--config', type=str, default = 'experiments/config.yaml')

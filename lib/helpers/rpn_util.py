@@ -127,7 +127,7 @@ def get_MAE(results_folder, gt_folder, conf= None, use_logging= False, logger= N
         iou_mat                  = iou(pred_x1_y1_x2_y2, gt_x1_y1_x2_y2)
 
         # Get max for each box
-        max_gt_overlap = np.max   (iou_mat, axis= 1)
+        max_gt_overlap = np.max(iou_mat, axis= 1)
         max_gt_index   = np.argmax(iou_mat, axis= 1)
 
         # Check if it there is sufficient overlap
@@ -208,6 +208,7 @@ def evaluate_waymo_results_verbose(results_folder, conf= None, use_logging= Fals
 
     path = '/opt/conda/bin/python3'  # /home/abc/anaconda3/envs/py36_waymo_tf/
     pd_set = os.path.join("/workspace/3DODKD/projects/waymo/ImageSets", 'val' + ".txt")
+
     command_0_7      = path + " -u data/waymo/waymo_eval.py --predictions "     + results_folder + " --pd_set " + pd_set
     command_0_5      = path + " -u data/waymo/waymo_eval_0_5.py --predictions " + results_folder + " --pd_set " + pd_set
 

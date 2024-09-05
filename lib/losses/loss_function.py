@@ -6,7 +6,7 @@ from lib.helpers.decode_helper import _transpose_and_gather_feat
 from lib.losses.focal_loss import focal_loss_cornernet as focal_loss
 from lib.losses.uncertainty_loss import laplacian_aleatoric_uncertainty_loss
 import operator
-kd = 0
+kd = 1
 
 class Hierarchical_Task_Learning:
     def __init__(self,epoch0_loss,stat_epoch_nums=5):
@@ -89,31 +89,16 @@ class Gupnet_KD_Loss(nn.Module):
     def forward(self, preds, targets, teacher_pred, task_uncertainties=None):
         if kd == 1:
             kd_loss = self.compute_kd_loss(preds, targets, teacher_pred)
-            #kd_difi_loss = self.compute_kd_difficulty_loss_only(preds, targets, teacher_pred)
-            #seg_loss = self.compute_segmentation_loss(preds, targets)
-
             kd_difi_loss = self.compute_kd_difficulty_loss(preds, targets, teacher_pred)
             bbox2d_loss = self.compute_bbox2d_loss(preds, targets)
             bbox3d_loss = self.compute_bbox3d_loss(preds, targets)
-            #kd_loss = self.compute_kd_loss(preds, teacher_pred)
-
-
-            #loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss
             loss = bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
-            #loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
         else :
-             #kd_loss = self.compute_kd_loss(preds, targets, teacher_pred)
-            # kd_difi_loss = self.compute_kd_difficulty_loss_only(preds, targets, teacher_pred)
             seg_loss = self.compute_segmentation_loss(preds, targets)
 
-            #kd_difi_loss = self.compute_kd_difficulty_loss(preds, targets, teacher_pred)
             bbox2d_loss = self.compute_bbox2d_loss(preds, targets)
             bbox3d_loss = self.compute_bbox3d_loss(preds, targets)
-            # kd_loss = self.compute_kd_loss(preds, teacher_pred)
 
-            # loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss
-            #loss = bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
-            # loss = seg_loss + bbox2d_loss + bbox3d_loss + kd_loss + kd_difi_loss
             loss = seg_loss + bbox2d_loss + bbox3d_loss
         return loss, self.stat
 
@@ -171,12 +156,10 @@ class Gupnet_KD_Loss(nn.Module):
         loss = 0
         a = 0.8
         gamma = 1.5
+        b=1
 
-        # pos_loss = (1 - input['heatmap']) * pos_inds
-        pos_loss = torch.log(input['heatmap']) * torch.pow((a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])), gamma) * pos_inds
-        #pos_loss = torch.log(a * input['heatmap'] + (1 - a) * teacher_input['heatmap']) * torch.pow((a * (1 - input['heatmap']) + (1 - a) * (1 - teacher_input['heatmap'])), 2) * pos_inds
-        #neg_loss = torch.log(a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])) * torch.pow(a*input['heatmap']+(1-a)*teacher_input['heatmap'], 2) * neg_inds * neg_weights
-        neg_loss = torch.log(1 - input['heatmap']) * torch.pow((a*(input['heatmap'])+(1-a)*(teacher_input['heatmap'])), gamma) * neg_inds * neg_weights
+        pos_loss = torch.log(input['heatmap']) * torch.pow((a*(1 - input['heatmap'])+(1-a)*(1 - teacher_input['heatmap'])), gamma) * pos_inds * b
+        neg_loss = torch.log(1 - input['heatmap']) * torch.pow((a*(input['heatmap'])+(1-a)*(teacher_input['heatmap'])), gamma) * neg_inds * neg_weights * b
 
         num_pos = pos_inds.float().sum()
 
@@ -279,19 +262,19 @@ class Gupnet_KD_Loss(nn.Module):
 
     def compute_kd_loss(self, input, target, teacher_input):
 
-        feature_kd_loss = self.criterion(input['feat'],teacher_input['feat'])
+        feature_kd_loss = (self.criterion(input['feat'],teacher_input['feat'])) * 1.0
 
         pos_inds = target['heatmap'].eq(1).float()
         num_pos = pos_inds.float().sum()
 
         pos_inds = pos_inds.sum(dim=1, keepdim=True)
 
-        T = 5
+        T = 4
         p_s = F.log_softmax(input['heatmap'] / T, dim=1)*pos_inds
         p_t = F.softmax(teacher_input['heatmap'] / T, dim=1)*pos_inds
-        hinton_kd_loss = (nn.KLDivLoss(reduction='sum')(p_s, p_t) * (T ** 2))/num_pos
+        hinton_kd_loss = ((nn.KLDivLoss(reduction='sum')(p_s, p_t) * (T ** 2))/num_pos)
 
-        roi_feature_loss = (self.criterion(input['roi_feature_masked'], teacher_input['roi_feature_masked'])) * 2.0
+        roi_feature_loss = (self.criterion(input['roi_feature_masked'], teacher_input['roi_feature_masked'])) * 1.0
 
         loss = feature_kd_loss + hinton_kd_loss + roi_feature_loss
 
