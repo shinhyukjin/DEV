@@ -60,7 +60,7 @@ sh data/KITTI/kitti_split1/devkit/cpp/build.sh
 
 ```
 pip install tensorflow-gpu==2.4
-conda install pandas
+pip install pandas
 pip3 install waymo-open-dataset-tf-2-4-0 --user
 ```
 
