@@ -16,9 +16,9 @@
 pip install opencv-python pandas
 ```
 
-- **KITTI, nuScenes and Waymo Data**
+- **KITTI, and Waymo Data**
 
-Follow instructions of [data_setup_README.md](data/data_setup_README.md) to setup KITTI, nuScenes and Waymo as follows:
+Follow instructions of [data_setup_README.md](data/data_setup_README.md) to setup KITTI, and Waymo as follows:
 
 ```bash
 DEVIANT
