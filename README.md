@@ -34,19 +34,6 @@ DEVIANT
 │      │      └── testing
 │      │            ├── calib
 │      │            └── image_2
-│      │
-│      ├── nusc_kitti
-│      │      ├── ImageSets
-│      │      ├── training
-│      │      │     ├── calib
-│      │      │     ├── image
-│      │      │     └── label
-│      │      │
-│      │      └── validation
-│      │            ├── calib
-│      │            ├── image
-│      │            └── label
-│      │
 │      └── waymo
 │             ├── ImageSets
 │             ├── training
@@ -61,8 +48,7 @@ DEVIANT
 │
 ├── experiments
 ├── images
-├── lib
-├── nuscenes-devkit        
+├── lib   
 │ ...
 ```
 
