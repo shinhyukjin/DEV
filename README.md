@@ -45,6 +45,8 @@ DEVIANT
 │                   ├── calib
 │                   ├── image
 │                   └── label
+├── output
+│      └── pretrained_model.pth
 │
 ├── experiments
 ├── images
