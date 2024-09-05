@@ -159,20 +159,10 @@ This will result in the following directory structure:
 
 ```
 
-As a sanity check, you should see a total of more than 39k  `calib`, `image_0` and `label_0` files in all the segment_ids of `validation_org` folder.
-
-```bash
-cd validation_org
-find */calib -type f | wc -l
-find */image_0 -type f | wc -l
-find */label_0 -type f | wc -l
-cd ..
-```
 
 Finally, run the script `setup_split.py` to convert the segments into standard KITTI format and generate `training` and `validation` folders of the Waymo Val split: 
 
-```bash
+```
 python setup_split.py
 ```
 
-```
