@@ -71,12 +71,10 @@ pip3 install waymo-open-dataset-tf-2-4-0 --user
 Train the model:
 
 ```bash
-chmod +x scripts_training.sh
-./scripts_training.sh
+python -u tools/train_val.py --config=experiments/pretrained.pth
 ```
 inference the model:
 
 ```bash
-chmod +x scripts_inference.sh
-./scripts_inference.sh
+python -u tools/train_val.py --config=experiments/pretrained.pth --resume_model output/'config'/checkpoints/checkpoint_epoch_30.pth -e
 ```
