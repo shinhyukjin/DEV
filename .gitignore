@@ -7,7 +7,7 @@ external/
 .idea/
 cache/
 output/
-data_backup/
+data/
 pathdef.m
 .tmp_results/
 images/qualitative/

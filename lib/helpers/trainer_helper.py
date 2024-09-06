@@ -51,7 +51,9 @@ class Trainer(object):
 
     def train(self):
         start_epoch = self.epoch
+        # epoch0_loss
         ei_loss = self.compute_e0_loss()
+        #initialize loss_weight
         loss_weightor = Hierarchical_Task_Learning(ei_loss)
         for epoch in range(start_epoch, self.cfg_train['max_epoch']):
             # train one epoch
@@ -64,6 +66,7 @@ class Trainer(object):
             # reset numpy seed.
             # ref: https://github.com/pytorch/pytorch/issues/5059
             np.random.seed(np.random.get_state()[1][0] + epoch)
+            # compute loss_weights
             loss_weights = loss_weightor.compute_weight(ei_loss, self.epoch)
             log_str = 'Weights: '
             for key in sorted(loss_weights.keys()):

@@ -2,11 +2,6 @@ import os
 import tqdm
 import sys
 
-# os.chdir("/3DOD/DEVIANT")
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# ROOT_DIR = os.path.dirname(BASE_DIR)
-# sys.path.append(ROOT_DIR)
-
 import torch
 import torch.nn as nn
 import numpy as np
@@ -68,7 +63,9 @@ class KD_Trainer(object):
 
     def train(self):
         start_epoch = self.epoch
+        # epoch0_loss
         ei_loss = self.compute_e0_loss()
+        #initialize loss_weight
         loss_weightor = Hierarchical_Task_Learning(ei_loss)
         #torch.cuda.empty_cache()
 
@@ -162,9 +159,10 @@ class KD_Trainer(object):
             # train one batch
             self.optimizer.zero_grad()
             criterion = Gupnet_KD_Loss(self.epoch)
+            # 3d information for model and teacher model
             outputs = self.model(inputs,coord_ranges,calibs,targets)
             teacher_outputs = self.teacher_model(inputs, coord_ranges, calibs, targets, mode='teacher', stu_ret=outputs)
-
+            #calculate each loss about model and teacher model
             total_loss, loss_terms = criterion(outputs, targets, teacher_outputs)
 
             
@@ -197,7 +195,7 @@ class KD_Trainer(object):
 
         for key in stat_dict.keys():
             stat_dict[key] /= trained_batch
-                            
+        # loss value of one epoch
         return stat_dict    
     def eval_one_epoch(self):
         self.model.eval()

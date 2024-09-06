@@ -34,14 +34,13 @@ teacher_model:
   sesn_rescale_basis: False
   sesn_scales: [ 0.83, 0.9, 1.0 ]
   scale_index_for_init: 0
-  resume_model: 'output/checkpoint_epoch_30_teacher_paper_pretrain.pth'
+  resume_model: 'output/'
   downsample: 4
 
 
 optimizer:
   type: 'adam'
   lr: 0.00125
-  #lr: 0.001
   weight_decay: 0.00001
 
 lr_scheduler:
@@ -54,21 +53,13 @@ trainer:
   eval_frequency: 30 # evaluation interval (in epoch)
   save_frequency: 10 # checkpoint save interval (in epoch)
   disp_frequency: 50 # display interval (in batch)
-  #disp_frequency: 10 # display interval (in batch)
 
-  log_dir: 'output/dev_gup_resnet18_waymo_R3KD_difi_p15_0802_region_05_midfeat_05_hinton_05_T4_a2_200808_gpu2'
-#  log_dir: 'output/dev_resnet18_waymo_backbone_hinton_roifeature__b1_200722'
-
-  #log_dir: 'output/debuging'
-
-
-
-  #log_dir: 'output/dev_resnet18_backbone_hinton_midfeature_boxfeature7x7_s-t-inside_difi_40__b1_200719'
-  #resume_model: '...'
+  log_dir: 'output/'
 
 
 tester:
   threshold: 0.1  # confidence filter
-  #resume_model: ''
-  #resume_model: 'output/checkpoint_epoch_140_res18.pth'
   tester_metrics: 'waymo'
+  
+  
+  

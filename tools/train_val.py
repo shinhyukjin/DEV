@@ -1,7 +1,6 @@
 import os
 import sys
 
-# os.chdir("/3DOD/DEVIANT")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(ROOT_DIR)
@@ -22,7 +21,7 @@ from lib.helpers.KD_trainer_helper import KD_Trainer
 from lib.helpers.tester_helper import Tester
 from datetime import datetime
 
-kd = 1
+kd = 1 # if you want to train vanilla model, kd value should be 0.
 parser = argparse.ArgumentParser(description='implementation of DEVIANT')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true', help='evaluate model on validation set')
 parser.add_argument('--config', type=str, default = 'experiments/config.yaml')
@@ -125,23 +124,12 @@ def main():
 
     # build model
     model = build_model(cfg,train_loader.dataset.cls_mean_size)
+    # build teacher model
     if kd == 1 :
         teacher_model = build_teacher_model(cfg, train_loader.dataset.cls_mean_size)
 
 
 
-    # if os.path.isfile(filename):
-    #     logger.info("==> Loading from checkpoint '{}'".format(filename))
-    #     checkpoint = torch.load(filename, map_location=map_location)
-    #     epoch = checkpoint.get('epoch', -1)
-    #     if model is not None and checkpoint['model_state'] is not None:
-    #         model.load_state_dict(checkpoint['model_state'])
-    #     if optimizer is not None and checkpoint['optimizer_state'] is not None:
-    #         optimizer.load_state_dict(checkpoint['optimizer_state'])
-    #         for state in optimizer.state.values():
-    #             for k, v in state.items():
-    #                 if isinstance(v, torch.Tensor):
-    #                     state[k] = v.to(map_location)
 
 
     # evaluation mode
@@ -160,7 +148,7 @@ def main():
     # build lr & bnm scheduler
     lr_scheduler, warmup_lr_scheduler = build_lr_scheduler(cfg['lr_scheduler'], optimizer, last_epoch=-1)
     if kd == 1 :
-        print("kd")
+        # do kd train
         kd_trainer = KD_Trainer(cfg=cfg,
                           model=model,
                           teacher_model=teacher_model,
@@ -172,7 +160,7 @@ def main():
                           logger=logger)
         kd_trainer.train()
     else :
-        print("train")
+        #do vanilla train
         trainer = Trainer(cfg=cfg,
                           model=model,
                           optimizer=optimizer,
@@ -183,9 +171,7 @@ def main():
                           logger=logger)
         trainer.train()
 
-
-
-
+    #test
     tester = Tester(cfg, model, val_loader, logger)
     tester.test()
 

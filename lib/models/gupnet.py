@@ -48,7 +48,6 @@ class GUPNet(nn.Module):
         super().__init__()
 
 
-        #self.cfg = cfg['model']
         self.cfg = cfg_model
         self.cfg_parent = cfg
         self.num_classes = len(self.cfg_parent['dataset']['writelist'])
@@ -132,7 +131,6 @@ class GUPNet(nn.Module):
         device_id = input.device
         BATCH_SIZE = input.size(0)
 
-        #print(teacher_feature)
         feat = self.backbone(input)
         if self.get_backbone_features:
             return feat
@@ -143,14 +141,6 @@ class GUPNet(nn.Module):
             ret[head] = self.__getattr__(head)(feat)
         '''
 
-        # if mode == 'teacher':
-        #     ret = {}
-        #     ret['heatmap'] = self.heatmap(feat)
-        #     ret['offset_2d'] = self.offset_2d(feat)
-        #     ret['size_2d'] = self.size_2d(feat)
-        #     ret['feat'] = feat
-        #
-        # else :
 
         ret = {}
         if mode == 'teacher':
@@ -184,7 +174,7 @@ class GUPNet(nn.Module):
 
 
         ret.update(self.get_roi_feat(feat,inds,masks,ret,calibs,coord_ranges,cls_ids))
-        return ret
+        return ret # heatmap, offset_2d, size_2d, feat, inds, cls_ids, masks, train_tag, heading, depth, offset_3d, size_3d, h3d_log_variance, roi_feature_masked
 
     def get_roi_feat_by_mask(self,feat,box2d_maps,inds,mask,calibs,coord_ranges,cls_ids):
         BATCH_SIZE,_,HEIGHT,WIDE = feat.size()
